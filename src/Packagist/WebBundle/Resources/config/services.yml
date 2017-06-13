@@ -55,9 +55,13 @@ services:
         calls:
             - [ setRedis, [ '@snc_redis.cache_client' ]]
 
+    packagist.package_zipper:
+        class: Packagist\WebBundle\Package\Zipper
+        arguments: ['%kernel.root_dir%', '%router.request_context.scheme%', '%router.request_context.host%', '%router.request_context.base_url%', '%webauth_user%', '%webauth_pass%']
+
     packagist.package_updater:
         class: Packagist\WebBundle\Package\Updater
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@packagist.package_zipper']
 
     fos_user.util.user_manipulator:
         class: Packagist\WebBundle\Util\UserManipulator

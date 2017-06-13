@@ -45,6 +45,11 @@ class Updater
      */
     protected $doctrine;
 
+	/**
+	 * @var Zipper
+	 */
+	private $zipper;
+
     /**
      * Supported link types
      * @var array
@@ -72,17 +77,19 @@ class Updater
         ),
     );
 
-    /**
-     * Constructor
-     *
-     * @param RegistryInterface $doctrine
-     */
-    public function __construct(RegistryInterface $doctrine)
+	/**
+	 * Constructor
+	 *
+	 * @param RegistryInterface $doctrine
+	 * @param Zipper $zipper
+	 */
+    public function __construct(RegistryInterface $doctrine, Zipper $zipper)
     {
         $this->doctrine = $doctrine;
+		$this->zipper = $zipper;
 
         ErrorHandler::register();
-    }
+	}
 
     /**
      * Update a project
@@ -274,12 +281,21 @@ class Updater
             $version->setSource(null);
         }
 
-        if ($data->getDistType()) {
-            $dist['type'] = $data->getDistType();
-            $dist['url'] = $data->getDistUrl();
-            $dist['reference'] = $data->getDistReference();
-            $dist['shasum'] = $data->getDistSha1Checksum();
-            $version->setDist($dist);
+        if (true) { // tady máme podmínku na to že se jedná o gitlab repozitář z naší group
+        	$version->setDist(
+				$this->zipper->createDist(
+					$package->getName(),
+					$data->getSourceUrl(),
+					$data->getSourceReference(),
+					$version->getVersion()
+				)
+			);
+		} elseif ($data->getDistType()) {
+	        $dist['type'] = $data->getDistType();
+	        $dist['url'] = $data->getDistUrl();
+	        $dist['reference'] = $data->getDistReference();
+	        $dist['shasum'] = $data->getDistSha1Checksum();
+	        $version->setDist($dist);
         } else {
             $version->setDist(null);
         }
