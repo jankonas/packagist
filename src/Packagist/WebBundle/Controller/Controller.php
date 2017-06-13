@@ -24,6 +24,15 @@ class Controller extends BaseController
 {
     protected function getPackagesMetadata($packages)
     {
+		$connection = $this->getDoctrine()->getEntityManager()->getConnection();
+		$statement = $connection->prepare('SELECT @@SESSION.sql_mode');
+		$statement->execute();
+		$oldModes = explode(',', $statement->fetch()['@@SESSION.sql_mode']);
+		$newModes = array_diff($oldModes, ['ONLY_FULL_GROUP_BY']);
+		if ($newModes !== $oldModes) {
+			$connection->exec('SET SESSION sql_mode=\'' . implode(',', $newModes) . '\'');
+		}
+
         $favMgr = $this->get('packagist.favorite_manager');
         $dlMgr = $this->get('packagist.download_manager');
 

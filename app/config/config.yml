@@ -46,7 +46,7 @@ doctrine:
         password: '%database_password%'
         charset:  utf8mb4
         # See https://github.com/sonata-project/SonataAdminBundle/issues/3342
-        server_version: 5.6
+        server_version: 5.7
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         auto_mapping: true
